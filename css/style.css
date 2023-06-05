@@ -17,6 +17,11 @@ img {
 
 .slide-wrapper {
    overflow: hidden;
+   cursor: grab;
+}
+
+.slide-wrapper:active {
+   cursor: grabbing;
 }
 
 .slide {
