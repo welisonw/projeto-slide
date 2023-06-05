@@ -71,11 +71,56 @@ export default class Slide {
       this.onMove = this.onMove.bind(this);
       this.onEnd = this.onEnd.bind(this);
    };
+
+
+   // Calcula para colocar o slide exatamente no centro da tela
+   slidePosition(slide) {
+      const margin = (this.wrapper.offsetWidth - slide.offsetWidth) / 2;
+
+      return -(slide.offsetLeft - margin);
+   };
+
+
+   slideIndexNav(index) {
+      const last = this.slidesArray.length - 1;
+
+      this.index = {
+         previus: index ? index - 1 : undefined,
+         current: index,
+         next: index ===  last ? undefined : index + 1,
+      };
+   };
+
+
+   // Configuração de cada slide
+   slidesConfig() {
+      this.slidesArray = [...this.slide.children].map((element) => {
+         const positionSlide = this.slidePosition(element);
+
+         return {
+            positionSlide,
+            element,
+         };
+      });
+
+      console.log(this.slidesArray);
+   };
    
+
+   // Muda o slide de acordo com o index que for passado
+   changeSlide(index) {
+      const activeSlide = this.slidesArray[index];
+
+      this.moveSlide(activeSlide.positionSlide);
+      this.slideIndexNav(index);
+
+      this.distance.finalPosition = activeSlide.positionSlide;
+   }
 
    init() {
       this.bindEvents();
       this.addSlideEvents();
+      this.slidesConfig();
 
       return this;
    }
