@@ -15,28 +15,44 @@ export default class Slide {
       this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
    };
 
-   onMove(event) {
-      // atualizar quanto slide foi movido
-      const finalPosition = this.updatePosition(event.clientX);
-      this.moveSlide(finalPosition);
-   };
-
    updatePosition(clientX) {
-      this.distance.movement =(this.distance.startX - clientX) * 1.6;
+      this.distance.movement = (this.distance.startX - clientX) * 1.6;
 
       return this.distance.finalPosition - this.distance.movement;
    };
+
+   onMove(event) {
+      // Posição do mouse ou do dedo
+      const pointerPosition = (event.type === 'mousemove') ? event.clientX : event.changedTouches[0].clientX;
+
+      // atualizar quanto slide foi movido
+      const finalPosition = this.updatePosition(pointerPosition);
+      this.moveSlide(finalPosition);
+   };
    
    onStart(event) {
-      event.preventDefault();
+      let movetype;
 
-      this.wrapper.addEventListener('mousemove', this.onMove);
+      // verificação DESKTOP ou MOBILE
+      if (event.type === 'mousedown') {
+         event.preventDefault();
+         this.distance.startX = event.clientX;
+         movetype = 'mousemove';
+         
+      } else {
+         this.distance.startX = event.changedTouches[0].clientX;
+         movetype = 'touchmove';
+      };
+      
+      this.wrapper.addEventListener(movetype, this.onMove);
 
-      this.distance.startX = event.clientX;
    };
 
-   onEnd() {
-      this.wrapper.removeEventListener('mousemove', this.onMove);
+   onEnd(event) {
+      // Tipo de movimento para remover o touchmove ou mousemove
+      const movetype = (event.type === 'mouseup') ? 'mousemove' : 'touchmove'
+
+      this.wrapper.removeEventListener(movetype, this.onMove);
 
       this.distance.finalPosition = this.distance.movePosition;
    }
@@ -44,10 +60,12 @@ export default class Slide {
    // Para adicionar cada evento do slide
    addSlideEvents() {
       this.wrapper.addEventListener('mousedown', this.onStart);
+      this.wrapper.addEventListener('touchstart', this.onStart);
       this.wrapper.addEventListener('mouseup', this.onEnd);
+      this.wrapper.addEventListener('touchend', this.onEnd);
    };
    
-   // bind this ao callback para fazer referência ao objeto da classe
+   // bind this aos callbacks para fazer referência ao objeto da classe
    bindEvents() {
       this.onStart = this.onStart.bind(this);
       this.onMove = this.onMove.bind(this);
