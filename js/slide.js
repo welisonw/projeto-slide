@@ -10,6 +10,10 @@ export default class Slide {
       };
    };
 
+   transition(active) {
+      this.slide.style.transition = active ? 'transform .3s' : '';
+   };
+
    moveSlide(distX) {
       this.distance.movePosition = distX;
       this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
@@ -46,8 +50,46 @@ export default class Slide {
       
       this.wrapper.addEventListener(movetype, this.onMove);
 
+      this.transition(false);
+
    };
 
+   slideIndexNav(index) {
+      const last = this.slidesArray.length - 1;
+
+      this.index = {
+         prev: index ? index - 1 : undefined,
+         actual: index,
+         next: index ===  last ? undefined : index + 1,
+      };
+   };
+
+   activeNextSlide() {
+      if (this.index.next !== undefined) {
+         this.changeSlide(this.index.next);
+      };
+   };
+
+   activePrevSlide() {
+      if (this.index.prev !== undefined) {
+         this.changeSlide(this.index.prev);
+      };
+   };
+
+   
+   // Mudar o slide 
+   changeSlideOnEnd() {
+      if (this.distance.movement > 120 && this.index.next !== undefined) {
+         this.activeNextSlide();
+      } else if (this.distance.movement < -120 && this.index.prev !== undefined) {
+         this.activePrevSlide();
+      } else {
+         this.changeSlide(this.index.actual);
+      };
+
+      console.log(this.distance.movement)
+   };
+   
    onEnd(event) {
       // Tipo de movimento para remover o touchmove ou mousemove
       const movetype = (event.type === 'mouseup') ? 'mousemove' : 'touchmove'
@@ -55,7 +97,11 @@ export default class Slide {
       this.wrapper.removeEventListener(movetype, this.onMove);
 
       this.distance.finalPosition = this.distance.movePosition;
-   }
+
+      this.transition(true);
+
+      this.changeSlideOnEnd();
+   };
    
    // Para adicionar cada evento do slide
    addSlideEvents() {
@@ -81,15 +127,7 @@ export default class Slide {
    };
 
 
-   slideIndexNav(index) {
-      const last = this.slidesArray.length - 1;
-
-      this.index = {
-         previus: index ? index - 1 : undefined,
-         current: index,
-         next: index ===  last ? undefined : index + 1,
-      };
-   };
+ 
 
 
    // Configuração de cada slide
@@ -115,9 +153,13 @@ export default class Slide {
       this.slideIndexNav(index);
 
       this.distance.finalPosition = activeSlide.positionSlide;
-   }
+   };
+
+
+  
 
    init() {
+      this.transition(true);
       this.bindEvents();
       this.addSlideEvents();
       this.slidesConfig();
