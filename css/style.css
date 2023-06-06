@@ -18,6 +18,7 @@ img {
 .slide-wrapper {
    overflow: hidden;
    cursor: grab;
+   margin-top: 35px;
 }
 
 .slide-wrapper:active {
@@ -49,3 +50,27 @@ img {
    opacity: 1;
    transform: scale(1);
 }
+
+[data-control='slide'] {
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
+   cursor: pointer;
+}
+
+[data-control='slide'] li a {
+   display: block;
+   width: 14px;
+   height: 14px;
+   background-color: #FB5;
+   border-radius: 50%;
+   overflow: hidden;
+   text-indent: -999px;
+   margin: 5px;
+}
+
+[data-control='slide'] li a:hover,
+[data-control='slide'] li.active a {
+   background-color: #E54;
+}
+
